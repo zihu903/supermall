@@ -1,0 +1,8 @@
+# _headers 文件内容
+# 匹配所有的 .html 文件
+/*.html
+Content-Type: text/html; charset=utf-8
+
+# （可选）如果你还有其他静态资源需要设置，比如 index.html
+# /success.html
+# Content-Type: text/html; charset=utf-8
