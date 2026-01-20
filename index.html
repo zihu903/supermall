@@ -14,10 +14,11 @@
             if (typeof wx !== 'undefined' && wx.miniProgram) {
                 console.log('检测到 wx 对象，准备发送消息');
                 wx.miniProgram.postMessage({
-                    data: {
+                    // 微信要求 data 必须是一个数组，或者兼容性更好
+                    data: [{
                         action: 'authSuccess',
                         message: '认证成功'
-                    }
+                    }]
                 });
                 // 发送后，可以尝试关闭当前 web-view 页面（可选）
                 // wx.miniProgram.navigateBack();
