@@ -1,16 +1,56 @@
 <!DOCTYPE html>
 <html>
-<head><title>Test</title></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证回调</title>
+    
+    <!-- 1. 引入 UniApp 官方提供的 WebView 适配 SDK -->
+    <!-- 这是关键！没有这个，uni API 无法生效 -->
+    <script src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.5.js"></script>
+    
+</head>
 <body>
-    <h1>如果看到这行字，说明 HTML 能正常显示</h1>
     <script>
-        // 使用最原始的 alert 和 document.write，不依赖任何框架
-        alert('JS 执行了！');
-        document.body.innerHTML += '<p>JS 已运行</p>';
-        // 尝试直接调用（虽然可能无效，但测试 JS 是否运行）
-        if(window.miniProgram) {
-            miniProgram.postMessage({data: 'test'});
+        // 2. 定义发送消息的函数
+        function sendAuthSuccess() {
+            // 关键修改：使用 uni 而不是 wx
+            // 并且需要等待 UniAppJSBridgeReady 事件，或者轮询检测 uni 对象
+            if (typeof uni !== 'undefined' && typeof uni.postMessage === 'function') {
+                console.log('检测到 UniApp 环境，发送消息...');
+                
+                uni.postMessage({
+                    data: {
+                        action: 'authSuccess',
+                        message: '认证成功'
+                    }
+                });
+                
+                // 发送成功后，可以尝试通知小程序执行返回（可选）
+                // uni.navigateBack();
+                
+                // 停止轮询
+                if (window.msgTimer) {
+                    clearInterval(window.msgTimer);
+                }
+            } else {
+                console.log('UniApp JSBridge 未就绪，继续等待...');
+            }
         }
+
+        // 3. 方案 A：推荐 - 使用轮询（最稳妥，防止事件监听失效）
+        // 页面加载后，每隔 300ms 检查一次 uni 对象
+        window.msgTimer = setInterval(sendAuthSuccess, 300);
+
+        // 4. 方案 B：备用 - 监听 UniApp 准备就绪事件
+        // 有些环境下轮询可能不必要，这个事件触发时也可以发
+        document.addEventListener('UniAppJSBridgeReady', function() {
+            sendAuthSuccess();
+            // 如果轮询还在跑，清除它
+            if (window.msgTimer) {
+                clearInterval(window.msgTimer);
+            }
+        });
     </script>
 </body>
 </html>
