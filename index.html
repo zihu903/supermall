@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>认证回调</title>
-    <!-- 引入微信 JSSDK（如果需要） -->
-    <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script> -->
+    <!-- 1. 确保引入微信 JS SDK -->
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
 </head>
 <body>
     <script>
-        // 页面加载时，向小程序发送消息
-        document.addEventListener("DOMContentLoaded", function() {
-            // 检查是否在微信小程序环境中
+        // 2. 定义发送消息的函数
+        function sendAuthSuccess() {
+            // 确保 wx 和 wx.miniProgram 都存在
             if (typeof wx !== 'undefined' && wx.miniProgram) {
-                // 发送成功消息
+                console.log('检测到 wx 对象，准备发送消息');
                 wx.miniProgram.postMessage({
                     data: {
                         action: 'authSuccess',
                         message: '认证成功'
                     }
                 });
-                
-                // 尝试返回上一页或关闭（具体逻辑在小程序端处理）
-                // wx.miniProgram.navigateBack(); // 根据需要选择
+                // 发送后，可以尝试关闭当前 web-view 页面（可选）
+                // wx.miniProgram.navigateBack();
+                clearInterval(timer); // 清除轮询
             } else {
-                // 非小程序环境下的降级处理（可选）
-                document.body.innerHTML = '<p>认证成功，请返回小程序...</p>';
+                console.log('wx 对象未就绪，继续等待...');
             }
-        });
+        }
+
+        // 3. 使用轮询代替 DOMContentLoaded
+        // 每 500ms 检查一次 wx 对象是否存在
+        var timer = setInterval(sendAuthSuccess, 500);
+
+        // 额外保险：页面加载完成时也触发一次
+        window.onload = sendAuthSuccess;
     </script>
 </body>
 </html>
