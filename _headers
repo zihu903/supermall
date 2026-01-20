@@ -4,5 +4,5 @@
 Content-Type: text/html; charset=utf-8
 
 # （可选）如果你还有其他静态资源需要设置，比如 index.html
-# /success.html
+# /index.html
 # Content-Type: text/html; charset=utf-8
