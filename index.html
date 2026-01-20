@@ -2,38 +2,55 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>认证回调</title>
-    <!-- 1. 确保引入微信 JS SDK -->
-    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    
+    <!-- 1. 引入 UniApp 官方提供的 WebView 适配 SDK -->
+    <!-- 这是关键！没有这个，uni API 无法生效 -->
+    <script src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.5.js"></script>
+    
 </head>
 <body>
     <script>
         // 2. 定义发送消息的函数
         function sendAuthSuccess() {
-            // 确保 wx 和 wx.miniProgram 都存在
-            if (typeof wx !== 'undefined' && wx.miniProgram) {
-                console.log('检测到 wx 对象，准备发送消息');
-                wx.miniProgram.postMessage({
-                    // 微信要求 data 必须是一个数组，或者兼容性更好
-                    data: [{
+            // 关键修改：使用 uni 而不是 wx
+            // 并且需要等待 UniAppJSBridgeReady 事件，或者轮询检测 uni 对象
+            if (typeof uni !== 'undefined' && typeof uni.postMessage === 'function') {
+                console.log('检测到 UniApp 环境，发送消息...');
+                
+                uni.postMessage({
+                    data: {
                         action: 'authSuccess',
                         message: '认证成功'
-                    }]
+                    }
                 });
-                // 发送后，可以尝试关闭当前 web-view 页面（可选）
-                // wx.miniProgram.navigateBack();
-                clearInterval(timer); // 清除轮询
+                
+                // 发送成功后，可以尝试通知小程序执行返回（可选）
+                // uni.navigateBack();
+                
+                // 停止轮询
+                if (window.msgTimer) {
+                    clearInterval(window.msgTimer);
+                }
             } else {
-                console.log('wx 对象未就绪，继续等待...');
+                console.log('UniApp JSBridge 未就绪，继续等待...');
             }
         }
 
-        // 3. 使用轮询代替 DOMContentLoaded
-        // 每 500ms 检查一次 wx 对象是否存在
-        var timer = setInterval(sendAuthSuccess, 500);
+        // 3. 方案 A：推荐 - 使用轮询（最稳妥，防止事件监听失效）
+        // 页面加载后，每隔 300ms 检查一次 uni 对象
+        window.msgTimer = setInterval(sendAuthSuccess, 300);
 
-        // 额外保险：页面加载完成时也触发一次
-        window.onload = sendAuthSuccess;
+        // 4. 方案 B：备用 - 监听 UniApp 准备就绪事件
+        // 有些环境下轮询可能不必要，这个事件触发时也可以发
+        document.addEventListener('UniAppJSBridgeReady', function() {
+            sendAuthSuccess();
+            // 如果轮询还在跑，清除它
+            if (window.msgTimer) {
+                clearInterval(window.msgTimer);
+            }
+        });
     </script>
 </body>
 </html>
