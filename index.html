@@ -1,1 +1,32 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>认证回调</title>
+    <!-- 引入微信 JSSDK（如果需要） -->
+    <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script> -->
+</head>
+<body>
+    <script>
+        // 页面加载时，向小程序发送消息
+        document.addEventListener("DOMContentLoaded", function() {
+            // 检查是否在微信小程序环境中
+            if (typeof wx !== 'undefined' && wx.miniProgram) {
+                // 发送成功消息
+                wx.miniProgram.postMessage({
+                    data: {
+                        action: 'authSuccess',
+                        message: '认证成功'
+                    }
+                });
+                
+                // 尝试返回上一页或关闭（具体逻辑在小程序端处理）
+                // wx.miniProgram.navigateBack(); // 根据需要选择
+            } else {
+                // 非小程序环境下的降级处理（可选）
+                document.body.innerHTML = '<p>认证成功，请返回小程序...</p>';
+            }
+        });
+    </script>
+</body>
+</html>
