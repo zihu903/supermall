@@ -12,6 +12,7 @@
 </head>
 <body>
     <script>
+        console.log('定义发送消息的函数，sendAuthSuccess');
         // 定义发送消息的函数
         function sendAuthSuccess() {
             // 1. 检查 uni 对象是否存在，且 postMessage 方法是否存在
@@ -40,13 +41,13 @@
             }
             return false;
         }
-
+        console.log('方案 A：监听 SDK 发出的就绪事件（最优雅）');
         // 方案 A：监听 SDK 发出的就绪事件（最优雅）
         document.addEventListener('UniAppJSBridgeReady', function() {
             console.log('捕获 UniAppJSBridgeReady 事件');
             sendAuthSuccess();
         });
-
+        console.log('方案 B：轮询兜底（防止事件监听失效，最稳妥）');
         // 方案 B：轮询兜底（防止事件监听失效，最稳妥）
         // 页面加载完成后开始轮询
         window.onload = function() {
