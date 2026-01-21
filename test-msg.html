@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>测试消息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h2>Web-View 测试页</h2>
+    <p>正在尝试发送消息...</p>
+
+    <!-- 内联 UniApp SDK (防止外部加载失败) -->
+    <script>
+        // 模拟 uni 对象（如果不存在则创建，防止报错）
+        window.uni = window.uni || {};
+        // 模拟 postMessage 方法（用于在浏览器控制台测试）
+        uni.postMessage = function(data) {
+            console.log('【浏览器模拟】消息已发送:', data);
+        };
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 立即发送消息
+            try {
+                // 1. 尝试调用 UniApp 的 postMessage
+                if (typeof uni.postMessage === 'function') {
+                    uni.postMessage({
+                        data: { 
+                            action: 'test_success', 
+                            message: 'Hello from Web!',
+                            timestamp: new Date().getTime()
+                        }
+                    });
+                    document.body.innerHTML += '<p style="color:green">✅ 消息发送成功 (UniApp)</p>';
+                } else {
+                    // 2. 如果 UniApp 不可用，尝试微信 JSSDK (备用)
+                    if (typeof wx !== 'undefined' && wx.miniProgram) {
+                        wx.miniProgram.postMessage({
+                            data: { 
+                                action: 'test_fallback', 
+                                message: 'Hello from WeChat JSSDK!'
+                            }
+                        });
+                        document.body.innerHTML += '<p style="color:orange">⚠️ 使用微信JSSDK发送</p>';
+                    } else {
+                        throw new Error('No bridge available');
+                    }
+                }
+            } catch (e) {
+                console.error('发送消息失败:', e);
+                document.body.innerHTML += '<p style="color:red">❌ 发送失败: ' + e.message + '</p>';
+            }
+        });
+    </script>
+</body>
+</html>
