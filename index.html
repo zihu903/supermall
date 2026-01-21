@@ -13,9 +13,12 @@
 </head>
 <body>
     <script>
+        console.log('页面加载后立即尝试发送消息');
         // 页面加载后立即尝试发送消息
         // 使用最简单的语法，避免兼容性问题
+        console.log('使用最简单的语法，避免兼容性问题');
         setTimeout(function() {
+            console.log('0000000');
             if (typeof uni !== 'undefined' && typeof uni.postMessage === 'function') {
                 console.log('检测到 uni 对象，发送消息');
                 uni.postMessage({
