@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>监听一个全局事件</title>
+    <title>两个按钮</title>
     <style type="text/css">
       .btn {
         display: block;
@@ -32,11 +32,17 @@
     <!-- 按钮区域 -->
     <div class="btn-list">
       <!-- 修改点：添加了 data-action 属性用于标识 -->
-      <button class="btn btn-red" type="button" id="postMessage" data-action="sendNow">立即发送消息</button>
+      <button class="btn btn-red" type="button" id="postMessage01" data-action="sendNow">立即发送消息001</button>
     </div>
 
     <p class="desc">点击上方按钮，网页将立即向宿主应用发送消息。</p>
+    
+  <div class="btn-list">
+      <!-- 修改点：添加了 data-action 属性用于标识 -->
+      <button class="btn btn-red" type="button" id="postMessage02" data-action="sendNow">立即发送消息002</button>
+    </div>
 
+    <p class="desc">点击上方按钮，网页将立即向宿主应用发送消息。</p>
     <script type="text/javascript">
   document.addEventListener('UniAppJSBridgeReady', function() {
     
@@ -48,7 +54,7 @@
     // 2. 【新增】在网页端监听一个全局事件（虽然通常在小程序监听，但这里为了演示原理）
     // 实际上，我们只需要确保 BridgeReady 后，就可以通过 emit 发送数据
 
-    document.getElementById('postMessage').addEventListener('click', function() {
+    document.getElementById('postMessage01').addEventListener('click', function() {
       console.log('按钮被点击，准备发送消息...');
 
       // 3. 【修改】不再使用 postMessage，改用 emit 触发全局事件
@@ -61,6 +67,21 @@
 
       console.log('消息已发出');
     });
+     // 为按钮绑定点击事件
+        document.getElementById('postMessage02').addEventListener('click', function() {
+          console.log('按钮被点击，准备发送消息...');
+          
+          // 执行发送逻辑
+          uni.postMessage({
+            data: {
+              action: 'message',
+              timestamp: new Date().getTime(), // 添加时间戳证明是实时发送
+              message: '按钮02点击！！！'
+            }
+          });
+          
+          console.log('消息已发出');
+        });
   });
 </script>
   </body>
