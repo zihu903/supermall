@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>网络网页</title>
+    <title>【网页】uni.$emit</title>
     <style type="text/css">
       .btn {
         display: block;
@@ -51,30 +51,32 @@
     <!-- uni 的 SDK -->
     <script type="text/javascript" src="uni.webview.1.5.6.js"></script>
     <script type="text/javascript">
-      // 待触发 `UniAppJSBridgeReady` 事件后，即可调用 uni 的 API。
-      document.addEventListener('UniAppJSBridgeReady', function() {
-        
-        // 初始化环境检测（可选）
-        uni.getEnv(function(res) {
-            console.log('当前环境：' + JSON.stringify(res));
-        });
+  // 等待 UniApp JSBridge 加载完成
+  document.addEventListener('UniAppJSBridgeReady', function() {
+    console.log('【网页】JSBridge 已就绪，准备绑定按钮...');
 
-        // 为按钮绑定点击事件
-        document.getElementById('postMessage').addEventListener('click', function() {
-          console.log('按钮被点击，准备发送消息...');
-          
-          // 执行发送逻辑
-          uni.postMessage({
-            data: {
-              action: 'message',
-              timestamp: new Date().getTime(), // 添加时间戳证明是实时发送
-              message: 'Hello from Web Page!'
-            }
+    // 获取按钮并绑定点击事件
+    const btn = document.getElementById('postMessage');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        console.log('【网页】按钮被点击，准备发送 uni.$emit...');
+
+        // 核心代码：触发全局事件
+        try {
+          // 发送一个名为 'webData' 的事件，携带数据
+          uni.$emit('webData', { 
+            action: 'jump', 
+            value: '网页发送的数据' 
           });
-          
-          console.log('消息已发出');
-        });
+          console.log('【网页】uni.$emit 发送成功！');
+        } catch (e) {
+          console.error('【网页】uni.$emit 发送出错:', e);
+        }
       });
-    </script>
+    } else {
+      console.error('【网页】找不到按钮元素');
+    }
+  });
+</script>
   </body>
 </html>
