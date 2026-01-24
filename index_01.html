@@ -36,18 +36,6 @@
     </div>
 
     <p class="desc">点击上方按钮，网页将立即向宿主应用发送消息。</p>
-
-    <script type="text/javascript">
-      var userAgent = navigator.userAgent;
-      if (/miniProgram/i.test(userAgent) && /micromessenger/i.test(userAgent)) {
-        document.write('<script type="text/javascript" src="jweixin-1.4.0.js"><\/script>');
-      }
-      // 如果不是头条小程序，则显示按钮区域（保持原逻辑）
-      if (!/toutiaomicroapp/i.test(userAgent)) {
-        document.querySelector('.btn-list').style.visibility = 'visible';
-      }
-    </script>
-    
     <!-- uni 的 SDK -->
     <script type="text/javascript" src="uni.webview.1.5.6.js"></script>
     <script type="text/javascript">
