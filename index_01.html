@@ -38,31 +38,66 @@
     <p class="desc">点击上方按钮，网页将立即向宿主应用发送消息。</p>
     <!-- uni 的 SDK -->
     <script type="text/javascript" src="uni.webview.1.5.6.js"></script>
+    <p class="desc" id="statusMessage" style="color: #dd524d; display: none;"></p>
     <script type="text/javascript">
-      // 待触发 `UniAppJSBridgeReady` 事件后，即可调用 uni 的 API。
-      document.addEventListener('UniAppJSBridgeReady', function() {
-        
-        // 初始化环境检测（可选）
-        uni.getEnv(function(res) {
-            console.log('当前环境：' + JSON.stringify(res));
-        });
+      (function() {
+        var sdkReady = false;
+        var SDK_TIMEOUT_MS = 5000;
 
-        // 为按钮绑定点击事件
-        document.getElementById('postMessage').addEventListener('click', function() {
-          console.log('按钮被点击，准备发送消息...');
-          
-          // 执行发送逻辑
-          uni.postMessage({
-            data: {
-              action: 'message',
-              timestamp: new Date().getTime(), // 添加时间戳证明是实时发送
-              message: 'Hello from Web Page!'
+        function showError(msg) {
+          var el = document.getElementById('statusMessage');
+          if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+          }
+          console.error('[supermall] ' + msg);
+        }
+
+        // 待触发 `UniAppJSBridgeReady` 事件后，即可调用 uni 的 API。
+        document.addEventListener('UniAppJSBridgeReady', function() {
+          sdkReady = true;
+          console.log('[supermall] UniAppJSBridge 就绪');
+
+          // 初始化环境检测
+          try {
+            uni.getEnv(function(res) {
+              console.log('当前环境：' + JSON.stringify(res));
+            });
+          } catch (err) {
+            showError('环境检测失败: ' + (err.message || err));
+          }
+
+          // 为按钮绑定点击事件
+          var postBtn = document.getElementById('postMessage');
+          if (!postBtn) {
+            showError('postMessage 按钮未找到，无法绑定事件');
+            return;
+          }
+
+          postBtn.addEventListener('click', function() {
+            console.log('按钮被点击，准备发送消息...');
+            try {
+              uni.postMessage({
+                data: {
+                  action: 'message',
+                  timestamp: new Date().getTime(),
+                  message: 'Hello from Web Page!'
+                }
+              });
+              console.log('消息已发出');
+            } catch (err) {
+              showError('postMessage 调用失败: ' + (err.message || err));
             }
           });
-          
-          console.log('消息已发出');
         });
-      });
+
+        // Timeout fallback: warn if bridge never becomes ready
+        setTimeout(function() {
+          if (!sdkReady) {
+            showError('UniAppJSBridge 在 ' + SDK_TIMEOUT_MS + 'ms 内未就绪，消息功能不可用');
+          }
+        }, SDK_TIMEOUT_MS);
+      })();
     </script>
   </body>
 </html>
