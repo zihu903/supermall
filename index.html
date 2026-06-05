@@ -49,7 +49,115 @@
         <button class="btn btn-red" type="button" id="postMessage">postMessage</button>
       </div>
     </div>
-    
+    <p class="desc" id="statusMessage" style="color: #dd524d; display: none;"></p>
+
+    <script type="text/javascript" src="uni.webview.1.5.6.js"></script>
+    <script type="text/javascript">
+      (function() {
+        var sdkReady = false;
+        var SDK_TIMEOUT_MS = 5000;
+
+        function showError(msg) {
+          var el = document.getElementById('statusMessage');
+          if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+          }
+          console.error('[supermall] ' + msg);
+        }
+
+        function invokeAction(action) {
+          if (!sdkReady || typeof uni === 'undefined') {
+            showError('SDK 未就绪，无法执行操作: ' + action);
+            return;
+          }
+          try {
+            var url = '/pages/index/index';
+            switch (action) {
+              case 'navigateTo':
+                uni.navigateTo({ url: url });
+                break;
+              case 'redirectTo':
+                uni.redirectTo({ url: url });
+                break;
+              case 'navigateBack':
+                uni.navigateBack({ delta: 1 });
+                break;
+              case 'reLaunch':
+                uni.reLaunch({ url: url });
+                break;
+              case 'switchTab':
+                uni.switchTab({ url: url });
+                break;
+              default:
+                showError('未知的操作类型: ' + action);
+                return;
+            }
+          } catch (err) {
+            showError(action + ' 调用失败: ' + (err.message || err));
+          }
+        }
+
+        // Bind click handlers for navigation buttons
+        try {
+          var buttons = document.querySelectorAll('.btn-list .btn[data-action]');
+          for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('click', function(e) {
+              var action = e.currentTarget.getAttribute('data-action');
+              if (!action) {
+                showError('按钮缺少 data-action 属性');
+                return;
+              }
+              invokeAction(action);
+            });
+          }
+        } catch (err) {
+          showError('绑定按钮事件失败: ' + (err.message || err));
+        }
+
+        // Bind postMessage button
+        var postBtn = document.getElementById('postMessage');
+        if (postBtn) {
+          postBtn.addEventListener('click', function() {
+            if (!sdkReady || typeof uni === 'undefined') {
+              showError('SDK 未就绪，无法发送消息');
+              return;
+            }
+            try {
+              uni.postMessage({
+                data: {
+                  action: 'message',
+                  timestamp: new Date().getTime(),
+                  message: 'Hello from Web Page!'
+                }
+              });
+            } catch (err) {
+              showError('postMessage 调用失败: ' + (err.message || err));
+            }
+          });
+        } else {
+          console.warn('[supermall] postMessage 按钮未找到');
+        }
+
+        // Wait for SDK bridge
+        document.addEventListener('UniAppJSBridgeReady', function() {
+          sdkReady = true;
+          // Reveal the post-message section once the bridge is available
+          var section = document.querySelector('.post-message-section');
+          if (section) {
+            section.style.visibility = 'visible';
+          }
+          console.log('[supermall] UniAppJSBridge 就绪');
+        });
+
+        // Timeout fallback: warn if bridge never becomes ready
+        setTimeout(function() {
+          if (!sdkReady) {
+            console.warn('[supermall] UniAppJSBridge 在 ' + SDK_TIMEOUT_MS + 'ms 内未就绪，按钮操作可能不可用');
+          }
+        }, SDK_TIMEOUT_MS);
+      })();
+    </script>
   </body>
 </html>
 

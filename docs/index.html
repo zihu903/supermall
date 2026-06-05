@@ -43,5 +43,19 @@
       <button class="btn" type="button" data-action="reLaunch">reLaunch</button>
       <button class="btn" type="button" data-action="switchTab">switchTab</button>
     </div>
+    <script type="text/javascript">
+      // This page intentionally omits the uni SDK ("无js" variant).
+      // Attach click handlers that surface a clear error instead of failing silently.
+      (function() {
+        var buttons = document.querySelectorAll('.btn-list .btn[data-action]');
+        for (var i = 0; i < buttons.length; i++) {
+          buttons[i].addEventListener('click', function(e) {
+            var action = e.currentTarget.getAttribute('data-action');
+            console.warn('[supermall] 此页面未加载 uni SDK，操作 "' + action + '" 不可用');
+            alert('此页面未加载 uni SDK，"' + action + '" 操作不可用。请使用包含 SDK 的页面。');
+          });
+        }
+      })();
+    </script>
   </body>
 </html>
