@@ -1,0 +1,29 @@
+.btn {
+  display: block;
+  margin: 20px auto;
+  padding: 5px;
+  background-color: #007aff;
+  border: 0;
+  color: #ffffff;
+  height: 40px;
+  width: 200px;
+  text-align: center;
+}
+
+.btn-red {
+  background-color: #dd524d;
+}
+
+.btn-yellow {
+  background-color: #f0ad4e;
+}
+
+.desc {
+  padding: 10px;
+  color: #999999;
+  text-align: center;
+}
+
+.post-message-section {
+  visibility: hidden;
+}
