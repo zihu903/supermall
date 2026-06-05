@@ -1,8 +1,16 @@
 # _headers 文件内容
+# 匹配所有路径
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
 # 匹配所有的 .html 文件
 /*.html
-Content-Type: text/html; charset=utf-8
-
-# （可选）如果你还有其他静态资源需要设置，比如 index.html
-# /index.html
-# Content-Type: text/html; charset=utf-8
+  Content-Type: text/html; charset=utf-8
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'self'
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
